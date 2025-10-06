@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Fix Arena - Uji Logika, Perbaiki Kode, dan Jalankan!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2d2d30;
+            --accent-cyan: #4EC9B0;
+            --accent-purple: #C586C0;
+            --accent-green: #4FC1FF;
+            --accent-orange: #CE9178;
+            --text-primary: #d4d4d4;
+            --text-secondary: #9e9e9e;
+            --border-color: #3e3e42;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--bg-secondary);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-cyan);
+            color: var(--bg-primary);
+            padding: 0.8rem 1.8rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 193, 255, 0.3);
+        }
+
+        .ai-mentor {
+            margin-top: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ai-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 3rem;
+        }
+
+        .ai-message {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .ai-message:after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--bg-secondary);
+        }
+
+        /* Challenge Page */
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .challenge-title {
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+        }
+
+        .challenge-level {
+            background-color: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .challenge-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            height: 70vh;
+        }
+
+        @media (max-width: 1024px) {
+            .challenge-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .editor-container {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            padding: 0.8rem 1rem;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+        }
+
+        .info-panel {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            background-color: var(--bg-tertiary);
+            padding: 1.2rem;
+            border-radius: 6px;
+        }
+
+        .panel-section h3 {
+            color: var(--accent-purple);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .console-output {
+            background-color: #1a1a1a;
+            padding: 1rem;
+            border-radius: 4px;
+            min-height: 120px;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            display: none;
+            background-color: rgba(78, 201, 176, 0.1);
+            border: 1px solid var(--accent-cyan);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .success-icon {
+            font-size: 1.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Explanation Page */
+        .explanation-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .explanation-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .explanation-header h2 {
+            font-size: 2.2rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .explanation-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .explanation-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .explanation-section {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .explanation-section h3 {
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .code-snippet {
+            background-color: #1a1a1a;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .fixed-code {
+            border-left: 4px solid var(--accent-cyan);
+        }
+
+        .flow-diagram {
+            background-color: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .flow-box {
+            display: inline-block;
+            background-color: var(--accent-cyan);
+            color: var(--bg-primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            margin: 0.5rem;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--accent-purple);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+        }
+
+        /* Animation for successful run */
+        @keyframes spark {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: spark 0.5s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .challenge-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <h1>Java Fix Arena</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" id="nav-home">Home</a></li>
+                <li><a href="#" id="nav-challenge">Challenge</a></li>
+                <li><a href="#" id="nav-explanation">Penjelasan</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Home Page -->
+        <section id="home-page" class="page active">
+            <div class="hero">
+                <h2>Perbaiki, Jalankan, dan Kuasai Java!</h2>
+                <p>Uji kemampuan debugging dan logika pemrograman Java Anda dengan tantangan interaktif. Temukan bug, perbaiki kode, dan lihat penjelasan mendalam untuk setiap solusi.</p>
+                <a href="#" class="btn" id="start-challenge">Mulai Tantangan</a>
+                
+                <div class="ai-mentor">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="ai-message">
+                        <p>Halo! Saya AI Mentor. Saya akan membantu Anda memahami konsep pemrograman Java melalui tantangan debugging. Ayo kita mulai!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenge Page -->
+        <section id="challenge-page" class="page">
+            <div class="challenge-header">
+                <h2 class="challenge-title" id="current-challenge-title">Challenge 1: Cek Ganjil Genap</h2>
+                <div class="challenge-level" id="current-challenge-level">Level: Mudah</div>
+            </div>
+            
+            <div class="challenge-container">
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <span>Editor Kode</span>
+                        <div class="editor-actions">
+                            <button class="btn btn-secondary" id="reset-code">Reset Code</button>
+                            <button class="btn" id="run-code">Run Code</button>
+                        </div>
+                    </div>
+                    <textarea id="code-editor">public class GanjilGenap {
+    public static void main(String[] args) {
+        int angka = 7;
+        if(angka / 2 == 0) {
+            System.out.println("Genap");
+        } else {
+            System.out.println("Ganjil");
+        }
+    }
+}</textarea>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="panel-section">
+                        <h3>Deskripsi Tantangan</h3>
+                        <p id="challenge-description">Perbaiki kode yang seharusnya menentukan apakah bilangan ganjil atau genap.</p>
+                        <p><strong>Hint:</strong> <span id="challenge-hint">Gunakan operator yang benar untuk sisa pembagian.</span></p>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Expected Output</h3>
+                        <div class="console-output" id="expected-output">Ganjil</div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Console Output</h3>
+                        <div class="console-output" id="console-output">Output akan muncul di sini setelah menjalankan kode.</div>
+                    </div>
+                    
+                    <div class="success-message" id="success-message">
+                        <div class="success-header">
+                            <span class="success-icon">✅</span>
+                            <h3>Mission Complete!</h3>
+                        </div>
+                        <p>Selamat! Kode Anda berhasil dijalankan dengan output yang benar.</p>
+                        <button class="btn" id="view-explanation" style="margin-top: 1rem;">Lihat Penjelasan</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation" style="margin-top: 2rem;">
+                <button class="btn btn-secondary" id="prev-challenge">Challenge Sebelumnya</button>
+                <button class="btn btn-secondary" id="next-challenge">Challenge Selanjutnya</button>
+            </div>
+        </section>
+
+        <!-- Explanation Page -->
+        <section id="explanation-page" class="page">
+            <div class="explanation-container">
+                <div class="explanation-header">
+                    <h2 id="explanation-title">Penjelasan: Cek Ganjil Genap</h2>
+                    <p>Pahami logika di balik solusi yang benar</p>
+                </div>
+                
+                <div class="explanation-content">
+                    <div>
+                        <div class="explanation-section">
+                            <h3>Langkah-langkah Logika</h3>
+                            <p id="logic-steps">1. Program menerima input sebuah angka<br>2. Mengecek apakah angka habis dibagi 2<br>3. Jika ya, tampilkan "Genap"<br>4. Jika tidak, tampilkan "Ganjil"</p>
+                        </div>
+                        
+                        <div class="explanation-section">
+                            <h3>Kesalahan dalam Kode Awal</h3>
+                            <p id="error-explanation">Kode awal menggunakan operator pembagian (/) untuk mengecek apakah angka genap. Ini salah karena operator pembagian akan menghasilkan nilai bagi, bukan sisa pembagian.</p>
+                            <div class="code-snippet">
+                                <p>Kode yang salah:</p>
+                                <code>if(angka / 2 == 0) { ... }</code>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="explanation-section">
+                            <h3>Kode yang Diperbaiki</h3>
+                            <div class="code-snippet fixed-code">
+                                <pre id="corrected-code">public class GanjilGenap {
+    public static void main(String[] args) {
+        int angka = 7;
+        if(angka % 2 == 0) {
+            System.out.println("Genap");
+        } else {
+            System.out.println("Ganjil");
+        }
+    }
+}</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="explanation-section">
+                            <h3>Visualisasi Alur Program</h3>
+                            <div class="flow-diagram">
+                                <div class="flow-box">Input: angka = 7</div>
+                                <div class="flow-arrow">↓</div>
+                                <div class="flow-box">Hitung: 7 % 2</div>
+                                <div class="flow-arrow">↓</div>
+                                <div class="flow-box">Hasil: 1 (bukan 0)</div>
+                                <div class="flow-arrow">↓</div>
+                                <div class="flow-box">Output: "Ganjil"</div>
+                            </div>
+                        </div>
+                        
+                        <div class="explanation-section">
+                            <h3>Kesalahan Umum</h3>
+                            <p id="common-mistakes">- Menggunakan operator pembagian (/) bukan modulus (%)<br>- Tidak memahami perbedaan antara nilai bagi dan sisa pembagian<br>- Lupa bahwa angka genap memiliki sisa pembagian 0 ketika dibagi 2</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="back-to-challenge">Kembali ke Challenge</button>
+                    <button class="btn" id="next-explanation">Penjelasan Selanjutnya</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script>
+        // Data challenges
+        const challenges = [
+            {
+                id: 1,
+                title: "Cek Ganjil Genap",
+                level: "Mudah",
+                description: "Perbaiki kode yang seharusnya menentukan apakah bilangan ganjil atau genap.",
+                hint: "Gunakan operator yang benar untuk sisa pembagian.",
+                code: `public class GanjilGenap {
+    public static void main(String[] args) {
+        int angka = 7;
+        if(angka / 2 == 0) {
+            System.out.println("Genap");
+        } else {
+            System.out.println("Ganjil");
+        }
+    }
+}`,
+                expectedOutput: "Ganjil",
+                correctedCode: `public class GanjilGenap {
+    public static void main(String[] args) {
+        int angka = 7;
+        if(angka % 2 == 0) {
+            System.out.println("Genap");
+        } else {
+            System.out.println("Ganjil");
+        }
+    }
+}`,
+                logicSteps: "1. Program menerima input sebuah angka\n2. Mengecek apakah angka habis dibagi 2 menggunakan operator modulus (%)\n3. Jika sisa pembagian adalah 0, tampilkan 'Genap'\n4. Jika tidak, tampilkan 'Ganjil'",
+                errorExplanation: "Kode awal menggunakan operator pembagian (/) untuk mengecek apakah angka genap. Ini salah karena operator pembagian akan menghasilkan nilai bagi, bukan sisa pembagian. Untuk angka 7, 7/2 = 3 (bukan 0), sehingga kode akan menampilkan 'Ganjil' meskipun secara kebetulan benar, tetapi untuk angka genap seperti 4, 4/2 = 2 (bukan 0) sehingga akan salah menampilkan 'Ganjil'.",
+                commonMistakes: "- Menggunakan operator pembagian (/) bukan modulus (%)\n- Tidak memahami perbedaan antara nilai bagi dan sisa pembagian\n- Lupa bahwa angka genap memiliki sisa pembagian 0 ketika dibagi 2"
+            },
+            {
+                id: 2,
+                title: "Jumlahkan Angka dalam Array",
+                level: "Mudah",
+                description: "Program ini seharusnya menghitung jumlah seluruh elemen array, tapi tidak berjalan benar.",
+                hint: "Hati-hati dengan batas loop (index array dimulai dari 0, berakhir di length - 1).",
+                code: `public class SumArray {
+    public static void main(String[] args) {
+        int[] angka = {2, 4, 6, 8};
+        int total = 0;
+        for(int i = 0; i <= angka.length; i++) {
+            total += angka[i];
+        }
+        System.out.println("Jumlah = " + total);
+    }
+}`,
+                expectedOutput: "Jumlah = 20",
+                correctedCode: `public class SumArray {
+    public static void main(String[] args) {
+        int[] angka = {2, 4, 6, 8};
+        int total = 0;
+        for(int i = 0; i < angka.length; i++) {
+            total += angka[i];
+        }
+        System.out.println("Jumlah = " + total);
+    }
+}`,
+                logicSteps: "1. Inisialisasi array dengan nilai [2, 4, 6, 8]\n2. Inisialisasi variabel total dengan nilai 0\n3. Loop melalui setiap elemen array menggunakan indeks dari 0 hingga panjang array - 1\n4. Tambahkan setiap elemen ke variabel total\n5. Tampilkan hasil penjumlahan",
+                errorExplanation: "Kode awal menggunakan kondisi i <= angka.length dalam loop. Ini akan menyebabkan ArrayIndexOutOfBoundsException karena indeks array dimulai dari 0 dan berakhir di length-1. Ketika i = angka.length (4), program mencoba mengakses angka[4] yang tidak ada.",
+                commonMistakes: "- Menggunakan <= instead of < dalam kondisi loop\n- Tidak memahami bahwa indeks array dimulai dari 0\n- Lupa bahwa array.length mengembalikan jumlah elemen, bukan indeks terakhir"
+            },
+            {
+                id: 3,
+                title: "Balik Kata",
+                level: "Sedang",
+                description: "Program ini seharusnya membalikkan string yang dimasukkan.",
+                hint: "Perhatikan arah perulangan dan batas indeks.",
+                code: `public class ReverseString {
+    public static void main(String[] args) {
+        String teks = "Halo Dunia";
+        String balik = "";
+        for(int i = 0; i <= teks.length(); i++) {
+            balik += teks.charAt(i);
+        }
+        System.out.println(balik);
+    }
+}`,
+                expectedOutput: "ainaD olaH",
+                correctedCode: `public class ReverseString {
+    public static void main(String[] args) {
+        String teks = "Halo Dunia";
+        String balik = "";
+        for(int i = teks.length() - 1; i >= 0; i--) {
+            balik += teks.charAt(i);
+        }
+        System.out.println(balik);
+    }
+}`,
+                logicSteps: "1. Inisialisasi string yang akan dibalik\n2. Buat string kosong untuk menampung hasil pembalikan\n3. Loop melalui karakter string dari belakang ke depan (dari indeks terakhir ke indeks 0)\n4. Tambahkan setiap karakter ke string hasil\n5. Tampilkan string yang sudah dibalik",
+                errorExplanation: "Kode awal mencoba mengakses karakter dengan indeks dari 0 hingga teks.length(), yang akan menyebabkan StringIndexOutOfBoundsException karena indeks terakhir adalah teks.length()-1. Selain itu, loop seharusnya berjalan dari belakang ke depan, bukan dari depan ke belakang.",
+                commonMistakes: "- Menggunakan <= instead of < dalam kondisi loop\n- Tidak mengurangi 1 dari panjang string untuk mendapatkan indeks terakhir\n- Loop berjalan dari depan ke belakang, bukan dari belakang ke depan\n- Tidak memahami bahwa indeks string dimulai dari 0"
+            },
+            {
+                id: 4,
+                title: "Faktorial",
+                level: "Sedang",
+                description: "Perbaiki program yang menghitung faktorial dari suatu angka.",
+                hint: "Arah perulangan salah. Pastikan loop tidak menjadi tak hingga.",
+                code: `public class Faktorial {
+    public static void main(String[] args) {
+        int n = 5;
+        int hasil = 1;
+        for(int i = 1; i <= n; i--) {
+            hasil = hasil * i;
+        }
+        System.out.println("Faktorial: " + hasil);
+    }
+}`,
+                expectedOutput: "Faktorial: 120",
+                correctedCode: `public class Faktorial {
+    public static void main(String[] args) {
+        int n = 5;
+        int hasil = 1;
+        for(int i = 1; i <= n; i++) {
+            hasil = hasil * i;
+        }
+        System.out.println("Faktorial: " + hasil);
+    }
+}`,
+                logicSteps: "1. Tentukan angka yang akan dihitung faktorialnya (n=5)\n2. Inisialisasi variabel hasil dengan nilai 1\n3. Loop dari i=1 hingga i=n dengan increment i++\n4. Kalikan hasil dengan i pada setiap iterasi\n5. Tampilkan hasil perkalian (faktorial)",
+                errorExplanation: "Kode awal menggunakan i-- dalam loop, yang menyebabkan nilai i berkurang terus menerus. Ini akan membuat loop tak hingga karena i akan selalu kurang dari atau sama dengan n. Seharusnya menggunakan i++ untuk menaikkan nilai i dari 1 hingga n.",
+                commonMistakes: "- Menggunakan decrement (i--) instead of increment (i++)\n- Tidak memahami arah perulangan yang diperlukan\n- Loop tak hingga karena kondisi tidak pernah terpenuhi\n- Salah inisialisasi nilai awal variabel hasil"
+            },
+            {
+                id: 5,
+                title: "Palindrome Checker",
+                level: "Sulit",
+                description: "Program ini memeriksa apakah kata merupakan palindrome (dibaca sama dari depan dan belakang).",
+                hint: "Cermati tanda = dan ==, serta indeks karakter terakhir (length() - 1 - i).",
+                code: `public class PalindromeCheck {
+    public static void main(String[] args) {
+        String kata = "katak";
+        boolean palindrome = false;
+        for(int i = 0; i < kata.length() / 2; i++) {
+            if(kata.charAt(i) == kata.charAt(kata.length() - i)) {
+                palindrome = true;
+            } else {
+                palindrome = false;
+            }
+        }
+        if(palindrome = true) {
+            System.out.println("Palindrome");
+        } else {
+            System.out.println("Bukan palindrome");
+        }
+    }
+}`,
+                expectedOutput: "Palindrome",
+                correctedCode: `public class PalindromeCheck {
+    public static void main(String[] args) {
+        String kata = "katak";
+        boolean palindrome = true;
+        for(int i = 0; i < kata.length() / 2; i++) {
+            if(kata.charAt(i) != kata.charAt(kata.length() - 1 - i)) {
+                palindrome = false;
+                break;
+            }
+        }
+        if(palindrome) {
+            System.out.println("Palindrome");
+        } else {
+            System.out.println("Bukan palindrome");
+        }
+    }
+}`,
+                logicSteps: "1. Inisialisasi string yang akan diperiksa\n2. Asumsikan string adalah palindrome (palindrome = true)\n3. Loop melalui setengah pertama string\n4. Bandingkan karakter di posisi i dengan karakter di posisi length-1-i\n5. Jika ditemukan perbedaan, set palindrome = false dan hentikan loop\n6. Tampilkan hasil berdasarkan nilai variabel palindrome",
+                errorExplanation: "Kode awal memiliki beberapa kesalahan:\n- Menggunakan kata.charAt(kata.length() - i) seharusnya kata.charAt(kata.length() - 1 - i)\n- Variabel palindrome di-set ulang di setiap iterasi, sehingga hanya hasil perbandingan terakhir yang berpengaruh\n- Menggunakan operator assignment (=) bukan perbandingan (==) dalam kondisi if terakhir",
+                commonMistakes: "- Salah menghitung indeks karakter dari belakang (lupa mengurangi 1)\n- Tidak menghentikan loop ketika sudah ditemukan ketidakcocokan\n- Menggunakan assignment (=) bukan perbandingan (==) dalam kondisi if\n- Logika pengecekan yang tidak tepat (harus mengasumsikan true dulu, lalu cari bukti false)"
+            }
+        ];
+
+        // Initialize app state
+        let currentChallengeIndex = 0;
+        let currentExplanationIndex = 0;
+        let editor;
+
+        // Initialize CodeMirror editor
+        document.addEventListener('DOMContentLoaded', function() {
+            editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+                mode: "text/x-java",
+                theme: "monokai",
+                lineNumbers: true,
+                indentUnit: 4,
+                smartIndent: true,
+                lineWrapping: true,
+                autofocus: true,
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete",
+                    "Ctrl-/": "toggleComment",
+                    "Tab": function(cm) {
+                        cm.replaceSelection("    ", "end");
+                    }
+                }
+            });
+            
+            // Set initial challenge
+            updateChallengeDisplay();
+            
+            // Navigation event listeners
+            document.getElementById('nav-home').addEventListener('click', () => showPage('home-page'));
+            document.getElementById('nav-challenge').addEventListener('click', () => showPage('challenge-page'));
+            document.getElementById('nav-explanation').addEventListener('click', () => showPage('explanation-page'));
+            document.getElementById('start-challenge').addEventListener('click', () => showPage('challenge-page'));
+            document.getElementById('run-code').addEventListener('click', runCode);
+            document.getElementById('reset-code').addEventListener('click', resetCode);
+            document.getElementById('view-explanation').addEventListener('click', showExplanation);
+            document.getElementById('back-to-challenge').addEventListener('click', () => showPage('challenge-page'));
+            document.getElementById('next-challenge').addEventListener('click', nextChallenge);
+            document.getElementById('prev-challenge').addEventListener('click', prevChallenge);
+            document.getElementById('next-explanation').addEventListener('click', nextExplanation);
+        });
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'explanation-page') {
+                updateExplanationDisplay();
+            }
+        }
+
+        // Update challenge display
+        function updateChallengeDisplay() {
+            const challenge = challenges[currentChallengeIndex];
+            document.getElementById('current-challenge-title').textContent = `Challenge ${challenge.id}: ${challenge.title}`;
+            document.getElementById('current-challenge-level').textContent = `Level: ${challenge.level}`;
+            document.getElementById('challenge-description').textContent = challenge.description;
+            document.getElementById('challenge-hint').textContent = challenge.hint;
+            document.getElementById('expected-output').textContent = challenge.expectedOutput;
+            document.getElementById('console-output').textContent = "Output akan muncul di sini setelah menjalankan kode.";
+            document.getElementById('success-message').classList.remove('active');
+            
+            editor.setValue(challenge.code);
+        }
+
+        // Update explanation display
+        function updateExplanationDisplay() {
+            const challenge = challenges[currentExplanationIndex];
+            document.getElementById('explanation-title').textContent = `Penjelasan: ${challenge.title}`;
+            document.getElementById('logic-steps').textContent = challenge.logicSteps;
+            document.getElementById('error-explanation').textContent = challenge.errorExplanation;
+            document.getElementById('corrected-code').textContent = challenge.correctedCode;
+            document.getElementById('common-mistakes').textContent = challenge.commonMistakes;
+        }
+
+        // Run code simulation
+        function runCode() {
+            const challenge = challenges[currentChallengeIndex];
+            const userCode = editor.getValue();
+            
+            // Simple simulation - in a real app, this would call a backend API
+            let output = "Menjalankan kode...\n";
+            
+            // Simulate code execution with a delay
+            setTimeout(() => {
+                // Check if the code matches the corrected version
+                if (userCode.replace(/\s+/g, '') === challenge.correctedCode.replace(/\s+/g, '')) {
+                    output += challenge.expectedOutput + "\n";
+                    output += "Kode berhasil dijalankan!";
+                    document.getElementById('console-output').textContent = output;
+                    
+                    // Show success message with animation
+                    document.getElementById('success-message').classList.add('active');
+                    
+                    // Add spark animation
+                    createSparks();
+                } else {
+                    output += "Error: Output tidak sesuai dengan yang diharapkan.\n";
+                    output += "Periksa kembali kode Anda.";
+                    document.getElementById('console-output').textContent = output;
+                }
+            }, 1000);
+            
+            document.getElementById('console-output').textContent = output;
+        }
+
+        // Reset code to original
+        function resetCode() {
+            const challenge = challenges[currentChallengeIndex];
+            editor.setValue(challenge.code);
+            document.getElementById('console-output').textContent = "Output akan muncul di sini setelah menjalankan kode.";
+            document.getElementById('success-message').classList.remove('active');
+        }
+
+        // Show explanation for current challenge
+        function showExplanation() {
+            currentExplanationIndex = currentChallengeIndex;
+            updateExplanationDisplay();
+            showPage('explanation-page');
+        }
+
+        // Navigation between challenges
+        function nextChallenge() {
+            if (currentChallengeIndex < challenges.length - 1) {
+                currentChallengeIndex++;
+                updateChallengeDisplay();
+            }
+        }
+
+        function prevChallenge() {
+            if (currentChallengeIndex > 0) {
+                currentChallengeIndex--;
+                updateChallengeDisplay();
+            }
+        }
+
+        function nextExplanation() {
+            if (currentExplanationIndex < challenges.length - 1) {
+                currentExplanationIndex++;
+                updateExplanationDisplay();
+            }
+        }
+
+        // Create spark animation for successful run
+        function createSparks() {
+            const runButton = document.getElementById('run-code');
+            const rect = runButton.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 12; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 50;
+                
+                spark.style.left = `${centerX}px`;
+                spark.style.top = `${centerY}px`;
+                
+                document.body.appendChild(spark);
+                
+                // Animate spark
+                setTimeout(() => {
+                    spark.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                }, 10);
+                
+                // Remove spark after animation
+                setTimeout(() => {
+                    spark.remove();
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
